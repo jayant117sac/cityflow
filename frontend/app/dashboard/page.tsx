@@ -2,6 +2,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const ComplaintsMap = dynamic(() => import('@/components/ComplaintsMap'), {
+  ssr: false,
+  loading: () => <div className="bg-gray-100 rounded-xl h-96 animate-pulse" />,
+});
 import api from '@/lib/api';
 
 export default function Dashboard() {
@@ -64,6 +70,11 @@ export default function Dashboard() {
         </div>
 
         {/* Complaints List */}
+        {/* Map Section */}
+<div className="mb-8">
+  <h2 className="text-lg font-semibold text-gray-700 mb-4">📍 Complaint Locations</h2>
+  <ComplaintsMap complaints={complaints} />
+</div>
         <h2 className="text-lg font-semibold text-gray-700 mb-4">Your Complaints</h2>
         {loading ? (
           <p className="text-gray-400">Loading...</p>

@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum Role {
+  citizen
+  field_officer
+  dept_head
+  super_admin
+}
+
+enum ComplaintStatus {
+  Pending
+  InProgress
+  Resolved
+  Rejected
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  passwordHash  String?
+  role          Role           @default(citizen)
+  phone         String?
+  createdAt     DateTime       @default(now())
+  complaints    Complaint[]
+  statusUpdates StatusUpdate[]
+  feedback      Feedback[]
+  payments      Payment[]
+}
+
+model Department {
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  email      String?
+  headUserId Int?
+  complaints Complaint[]
+}
+
+model Complaint {
+  id            Int             @id @default(autoincrement())
+  title         String
+  category      String
+  description   String
+  status        ComplaintStatus @default(Pending)
+  imageUrl      String?
+  lat           Float?
+  lng           Float?
+  userId        Int
+  assignedDept  Int?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  user          User            @relation(fields: [userId], references: [id])
+  department    Department?     @relation(fields: [assignedDept], references: [id])
+  statusUpdates StatusUpdate[]
+  feedback      Feedback?
+}
+
+model StatusUpdate {
+  id              Int       @id @default(autoincrement())
+  complaintId     Int
+  status          String
+  note            String?
+  updatedByUserId Int
+  createdAt       DateTime  @default(now())
+  complaint       Complaint @relation(fields: [complaintId], references: [id])
+  updatedBy       User      @relation(fields: [updatedByUserId], references: [id])
+}
+
+model Announcement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  type        String
+  publishedBy Int
+  createdAt   DateTime @default(now())
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  billType      String
+  amount        Float
+  status        String
+  transactionId String?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+  id          Int       @id @default(autoincrement())
+  complaintId Int       @unique
+  rating      Int
+  comment     String?
+  userId      Int
+  createdAt   DateTime  @default(now())
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+}

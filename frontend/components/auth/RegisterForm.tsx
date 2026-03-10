@@ -72,20 +72,20 @@ export default function RegisterForm() {
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = (): boolean => {
     const e: Errors = {};
-    if (!name.trim())        e.name     = 'Full name is required';
-    else if (name.trim().length < 2) e.name = 'Name must be at least 2 characters';
+    if (!name.trim())                e.name     = 'Full name is required';
+    else if (name.trim().length < 2) e.name     = 'Name must be at least 2 characters';
 
-    if (!email)              e.email    = 'Email address is required';
+    if (!email)                      e.email    = 'Email address is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Enter a valid email address';
 
-    if (!password)           e.password = 'Password is required';
-    else if (password.length < 8)        e.password = 'Password must be at least 8 characters';
+    if (!password)                   e.password = 'Password is required';
+    else if (password.length < 8)    e.password = 'Password must be at least 8 characters';
 
-    if (!confirm)            e.confirm  = 'Please confirm your password';
-    else if (confirm !== password)       e.confirm = 'Passwords do not match';
+    if (!confirm)                    e.confirm  = 'Please confirm your password';
+    else if (confirm !== password)   e.confirm  = 'Passwords do not match';
 
-    if (!role)               e.role     = 'Please select a role to continue';
-    if (!terms)              e.terms    = 'You must agree to the Terms & Privacy Policy';
+    if (!role)                       e.role     = 'Please select a role to continue';
+    if (!terms)                      e.terms    = 'You must agree to the Terms & Privacy Policy';
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -98,17 +98,19 @@ export default function RegisterForm() {
     setLoading(true);
     setErrors({});
     try {
-      const res  = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password, role: role.toUpperCase() }),
       });
       const data = await res.json();
       if (!res.ok) {
         setErrors({ general: data.message || 'Registration failed. Please try again.' });
       } else {
+        localStorage.setItem('cf_token', data.token);
+        localStorage.setItem('cf_user', JSON.stringify(data.user));
         setSuccess(true);
-        setTimeout(() => router.push('/login?registered=true'), 2000);
+        setTimeout(() => router.push('/dashboard'), 2000);
       }
     } catch {
       setErrors({ general: 'Connection error. Please check your network and try again.' });
@@ -131,11 +133,14 @@ export default function RegisterForm() {
             style={{ background: `${C.success}14`, border: `2px solid ${C.success}30` }}>
             <CheckCircle2 size={32} style={{ color: C.success }} />
           </div>
-          <h2 className="font-bold text-xl" style={{ fontFamily: 'Georgia,serif', color: C.text }}>Account created!</h2>
+          <h2 className="font-bold text-xl" style={{ fontFamily: 'Georgia,serif', color: C.text }}>
+            Account created!
+          </h2>
           <p className="text-[14px] leading-relaxed" style={{ color: C.muted }}>
-            Welcome to CityFlow. Redirecting you to sign in…
+            Welcome to CityFlow. Taking you to your dashboard…
           </p>
-          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: `${C.primary}30`, borderTopColor: C.primary }} />
+          <div className="w-6 h-6 border-2 rounded-full animate-spin"
+            style={{ borderColor: `${C.primary}30`, borderTopColor: C.primary }} />
         </motion.div>
       </AuthCard>
     );
@@ -244,15 +249,17 @@ export default function RegisterForm() {
                     onClick={() => { setRole(r.id); if (errors.role) setErrors(p => ({ ...p, role: '' })); }}
                     animate={{
                       borderColor: selected ? C.primary : errors.role ? C.error : '#CBD5E1',
-                      background: selected ? `${C.primary}0c` : C.white,
-                      boxShadow: selected ? `0 0 0 3px ${C.primary}22` : 'none',
+                      background:  selected ? `${C.primary}0c` : C.white,
+                      boxShadow:   selected ? `0 0 0 3px ${C.primary}22` : 'none',
                     }}
                     transition={{ duration: 0.15 }}
                     className="flex flex-col items-start gap-1 p-3 rounded-xl border text-left cursor-pointer outline-none focus-visible:ring-2"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{r.icon}</span>
-                      <span className="text-[13px] font-bold" style={{ color: selected ? C.primary : C.text }}>{r.title}</span>
+                      <span className="text-[13px] font-bold" style={{ color: selected ? C.primary : C.text }}>
+                        {r.title}
+                      </span>
                     </div>
                     <p className="text-[11px] leading-snug" style={{ color: C.muted }}>{r.desc}</p>
                   </motion.button>
@@ -277,9 +284,9 @@ export default function RegisterForm() {
                 role="checkbox"
                 aria-checked={terms}
                 onClick={() => { setTerms(s => !s); if (errors.terms) setErrors(p => ({ ...p, terms: '' })); }}
-                className="shrink-0 mt-0.5 w-4 h-4 rounded-[4px] flex items-center justify-center transition-all duration-200 outline-none focus-visible:ring-2"
+                className="shrink-0 mt-0.5 w-4 h-4 rounded-sm flex items-center justify-center transition-all duration-200 outline-none focus-visible:ring-2"
                 style={{
-                  border: `2px solid ${terms ? C.primary : errors.terms ? C.error : '#CBD5E1'}`,
+                  border:     `2px solid ${terms ? C.primary : errors.terms ? C.error : '#CBD5E1'}`,
                   background: terms ? C.primary : 'transparent',
                 }}
               >
@@ -291,13 +298,17 @@ export default function RegisterForm() {
               </button>
               <span className="text-[13px] leading-relaxed" style={{ color: C.muted }}>
                 I agree to the{' '}
-                <Link href="/terms" className="font-semibold no-underline hover:underline" style={{ color: C.primary }}>Terms of Service</Link>
+                <Link href="/terms" className="font-semibold no-underline hover:underline" style={{ color: C.primary }}>
+                  Terms of Service
+                </Link>
                 {' '}&amp;{' '}
-                <Link href="/privacy" className="font-semibold no-underline hover:underline" style={{ color: C.primary }}>Privacy Policy</Link>
+                <Link href="/privacy" className="font-semibold no-underline hover:underline" style={{ color: C.primary }}>
+                  Privacy Policy
+                </Link>
               </span>
             </label>
             {errors.terms && (
-              <p className="text-[11px] font-medium mt-1 ml-6.5 flex items-center gap-1" style={{ color: C.error }}>
+              <p className="text-[11px] font-medium mt-1 ml-6 flex items-center gap-1" style={{ color: C.error }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
                 </svg>
@@ -315,8 +326,8 @@ export default function RegisterForm() {
           whileHover={!loading ? { y: -1, boxShadow: `0 8px 28px ${C.primary}55` } : {}}
           whileTap={!loading ? { y: 1 } : {}}
           animate={{
-            background: loading ? '#94A3B8' : C.primary,
-            boxShadow: loading ? 'none' : `0 4px 18px ${C.primary}40`,
+            background:  loading ? '#94A3B8' : C.primary,
+            boxShadow:   loading ? 'none' : `0 4px 18px ${C.primary}40`,
           }}
           transition={{ duration: 0.15 }}
           aria-label="Create account"

@@ -29,17 +29,20 @@ export default function DashboardPage() {
   useEffect(() => {
     const stored = localStorage.getItem('cf_user');
     if (!stored) { router.push('/login'); return; }
-    setUser(JSON.parse(stored) as User);
 
-    const token = localStorage.getItem('cf_token');
+    const parsedUser = JSON.parse(stored) as User;
+    const token      = localStorage.getItem('cf_token');
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-stats`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.ok ? res.json() : null)
       .then(data => {
+        setUser(parsedUser);
         setStats(data ?? { civicScore: 742, reportsSubmitted: 8, issuesResolved: 5, alertsNearby: 3 });
       })
       .catch(() => {
+        setUser(parsedUser);
         setStats({ civicScore: 742, reportsSubmitted: 8, issuesResolved: 5, alertsNearby: 3 });
       })
       .finally(() => setStatsLoading(false));

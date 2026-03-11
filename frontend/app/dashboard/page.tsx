@@ -47,10 +47,12 @@ export default function Dashboard() {
     }
 
     const parsedUser = JSON.parse(stored) as User;
-    setUser(parsedUser); // ✅ no longer synchronous setState issue
 
     api.get('/api/complaints')
-      .then(({ data }: { data: Complaint[] }) => setComplaints(data))
+      .then(({ data }: { data: Complaint[] }) => {
+        setUser(parsedUser);
+        setComplaints(data);
+      })
       .catch(() => router.push('/login'))
       .finally(() => setLoading(false));
   }, [router]);

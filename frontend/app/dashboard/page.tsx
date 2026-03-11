@@ -6,6 +6,8 @@ import WelcomeSection  from '@/components/dashboard/WelcomeSection';
 import StatCards       from '@/components/dashboard/StatCards';
 import QuickActions    from '@/components/dashboard/QuickActions';
 import ReportsTable    from '@/components/dashboard/ReportsTable';
+import CityInsights    from '@/components/dashboard/CityInsights';
+import ActivityChart   from '@/components/dashboard/ActivityChart';
 
 interface Stats {
   civicScore:       number;
@@ -64,6 +66,12 @@ export default function DashboardPage() {
 
       {/* 4. Recent Reports Table */}
       <ReportsTable />
+
+      {/* 5. City Insights */}
+      <CityInsights city="pune" />
+
+      {/* 6. Weekly Activity Chart */}
+      <ActivityChart />
     </DashboardLayout>
   );
 }

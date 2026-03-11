@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import WelcomeSection  from '@/components/dashboard/WelcomeSection';
-import StatCards       from '@/components/dashboard/StatCards';
-import QuickActions    from '@/components/dashboard/QuickActions';
-import ReportsTable    from '@/components/dashboard/ReportsTable';
-import CityInsights    from '@/components/dashboard/CityInsights';
-import ActivityChart   from '@/components/dashboard/ActivityChart';
+import DashboardLayout   from '@/components/layout/DashboardLayout';
+import WelcomeSection    from '@/components/dashboard/WelcomeSection';
+import StatCards         from '@/components/dashboard/StatCards';
+import QuickActions      from '@/components/dashboard/QuickActions';
+import ReportsTable      from '@/components/dashboard/ReportsTable';
+import CityInsights      from '@/components/dashboard/CityInsights';
+import ActivityChart     from '@/components/dashboard/ActivityChart';
+import MapPreview        from '@/components/dashboard/MapPreview';
+import CityAlertsPanel   from '@/components/dashboard/CityAlertsPanel';
 
 interface Stats {
   civicScore:       number;
@@ -54,7 +56,13 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      rightPanel={
+        <div className="rounded-2xl p-4 h-full" style={{ background: '#131B23', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <CityAlertsPanel city="pune" />
+        </div>
+      }
+    >
       {/* 1. Welcome */}
       <WelcomeSection userName={user.name} />
 
@@ -64,7 +72,7 @@ export default function DashboardPage() {
       {/* 3. Quick Actions */}
       <QuickActions />
 
-      {/* 4. Recent Reports Table */}
+      {/* 4. Recent Reports */}
       <ReportsTable />
 
       {/* 5. City Insights */}
@@ -72,6 +80,9 @@ export default function DashboardPage() {
 
       {/* 6. Weekly Activity Chart */}
       <ActivityChart />
+
+      {/* 7. Map Preview */}
+      <MapPreview city="pune" />
     </DashboardLayout>
   );
 }

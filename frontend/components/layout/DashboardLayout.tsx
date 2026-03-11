@@ -30,10 +30,13 @@ export default function DashboardLayout({ children, rightPanel }: DashboardLayou
 
           {/* Optional right panel */}
           {rightPanel && (
-            <aside className="w-80 shrink-0 overflow-y-auto border-l border-white/5 px-4 py-6 bg-[#0d1117]">
-              {rightPanel}
-            </aside>
-          )}
+  <aside
+    className="shrink-0 overflow-y-auto px-4 py-6"
+    style={{ width: '260px', borderLeft: '1px solid rgba(255,255,255,0.05)', background: '#0d1117' }}
+  >
+    {rightPanel}
+  </aside>
+)}
         </div>
       </div>
     </div>

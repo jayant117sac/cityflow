@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { ComponentType } from 'react';
 import Sidebar from '@/components/dashboard/Sidebar';
 import {
   AlertTriangle, Car, Bell, Layers, X,
@@ -10,10 +11,10 @@ import {
   Filter, Navigation, RefreshCw,
 } from 'lucide-react';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-export interface IssueMarker  { lat: number; lng: number; title: string; status: string; location?: string; time?: string; }
+// ── Types (defined locally — no external types file needed) ───────────────────
+export interface IssueMarker   { lat: number; lng: number; title: string; status: string; location?: string; time?: string; }
 export interface ParkingMarker { lat: number; lng: number; title: string; spots: number; }
-export interface AlertMarker  { lat: number; lng: number; title: string; severity: string; time?: string; }
+export interface AlertMarker   { lat: number; lng: number; title: string; severity: string; time?: string; }
 
 export interface MapData {
   issues:  IssueMarker[];
@@ -26,38 +27,48 @@ export type SelectedItem =
   | { type: 'parking'; data: ParkingMarker }
   | { type: 'alert';   data: AlertMarker };
 
+interface CityLeafletMapProps {
+  mapData:      MapData;
+  filters:      { issues: boolean; parking: boolean; alerts: boolean };
+  onSelectItem: (item: SelectedItem) => void;
+  onMapClick:   (lat: number, lng: number) => void;
+}
+
+// ── Dynamic map (no SSR) ──────────────────────────────────────────────────────
+const CityLeafletMap = dynamic<CityLeafletMapProps>(
+  () => import('@/components/map/CityLeafletMap') as Promise<{ default: ComponentType<CityLeafletMapProps> }>,
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-3"
+        style={{ background: '#0d1117' }}>
+        <div className="w-8 h-8 rounded-full border-2 border-[#2274A5] border-t-transparent animate-spin" />
+        <p className="text-[13px]" style={{ color: '#3a5060' }}>Loading city map…</p>
+      </div>
+    ),
+  }
+);
+
 // ── Placeholder data ──────────────────────────────────────────────────────────
 const PLACEHOLDER: MapData = {
   issues: [
-    { lat: 18.5308, lng: 73.8476, title: 'Pothole on FC Road',        status: 'In Progress', location: 'FC Road',       time: '2 hours ago' },
-    { lat: 18.5214, lng: 73.8567, title: 'Streetlight broken',        status: 'Reported',    location: 'Deccan',        time: 'Yesterday' },
-    { lat: 18.5180, lng: 73.8550, title: 'Garbage not collected',      status: 'Resolved',    location: 'Kothrud',       time: '3 days ago' },
-    { lat: 18.5320, lng: 73.8610, title: 'Water leakage on main road', status: 'Reported',    location: 'Wakad',         time: '4 days ago' },
-    { lat: 18.5270, lng: 73.8430, title: 'Road cave-in near market',   status: 'In Progress', location: 'Shivajinagar',  time: '1 day ago' },
+    { lat: 18.5308, lng: 73.8476, title: 'Pothole on FC Road',        status: 'In Progress', location: 'FC Road',      time: '2 hours ago' },
+    { lat: 18.5214, lng: 73.8567, title: 'Streetlight broken',        status: 'Reported',    location: 'Deccan',       time: 'Yesterday'   },
+    { lat: 18.5180, lng: 73.8550, title: 'Garbage not collected',      status: 'Resolved',    location: 'Kothrud',      time: '3 days ago'  },
+    { lat: 18.5320, lng: 73.8610, title: 'Water leakage on main road', status: 'Reported',    location: 'Wakad',        time: '4 days ago'  },
+    { lat: 18.5270, lng: 73.8430, title: 'Road cave-in near market',   status: 'In Progress', location: 'Shivajinagar', time: '1 day ago'   },
   ],
   parking: [
-    { lat: 18.5250, lng: 73.8490, title: 'Parking A — Deccan',     spots: 12 },
-    { lat: 18.5280, lng: 73.8520, title: 'Parking B — FC Road',    spots: 4  },
-    { lat: 18.5230, lng: 73.8600, title: 'Parking C — Shivajinagar', spots: 0 },
+    { lat: 18.5250, lng: 73.8490, title: 'Parking A — Deccan',       spots: 12 },
+    { lat: 18.5280, lng: 73.8520, title: 'Parking B — FC Road',      spots: 4  },
+    { lat: 18.5230, lng: 73.8600, title: 'Parking C — Shivajinagar', spots: 0  },
   ],
   alerts: [
-    { lat: 18.5290, lng: 73.8450, title: 'Road closure',   severity: 'High',   time: '1 hour ago' },
-    { lat: 18.5340, lng: 73.8500, title: 'Power outage',   severity: 'High',   time: '2 hours ago' },
-    { lat: 18.5200, lng: 73.8480, title: 'Community event', severity: 'Low',   time: 'Today' },
+    { lat: 18.5290, lng: 73.8450, title: 'Road closure',    severity: 'High', time: '1 hour ago'  },
+    { lat: 18.5340, lng: 73.8500, title: 'Power outage',    severity: 'High', time: '2 hours ago' },
+    { lat: 18.5200, lng: 73.8480, title: 'Community event', severity: 'Low',  time: 'Today'       },
   ],
 };
-
-// ── Dynamic map (no SSR) ──────────────────────────────────────────────────────
-const CityLeafletMap = dynamic(() => import('../../../components/map/CityLeafletMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex flex-col items-center justify-center gap-3"
-      style={{ background: '#0d1117' }}>
-      <div className="w-8 h-8 rounded-full border-2 border-[#2274A5] border-t-transparent animate-spin" />
-      <p className="text-[13px]" style={{ color: '#3a5060' }}>Loading city map…</p>
-    </div>
-  ),
-});
 
 // ── Status badge color ────────────────────────────────────────────────────────
 const STATUS_COLOR: Record<string, string> = {

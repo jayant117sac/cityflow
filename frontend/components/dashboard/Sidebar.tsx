@@ -47,8 +47,14 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 mb-2">
-        <div className="w-8 h-8 rounded-lg bg-[#2274A5] flex items-center justify-center shrink-0">
-          <span className="text-white font-bold text-sm">C</span>
+        <div
+          className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 text-lg"
+          style={{
+            background:  'linear-gradient(135deg, #2274A5, #1a5a82)',
+            boxShadow:   '0 4px 12px rgba(34,116,165,0.4)',
+          }}
+        >
+          🏙️
         </div>
         <AnimatePresence>
           {!collapsed && (
@@ -58,8 +64,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
               exit={{ opacity: 0, x: -8 }}
               transition={{ duration: 0.15 }}
             >
-              <p className="text-white font-bold text-[15px] leading-none">CityFlow</p>
-              <p className="text-[#4a6070] text-[10px] uppercase tracking-widest mt-0.5">Smart City</p>
+              <p style={{ fontFamily: 'Georgia, serif', fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '-0.3px', lineHeight: 1 }}>CityFlow</p>
+              <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: 2 }}>Smart City Platform</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -151,12 +157,17 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Collapse toggle */}
       <motion.button
         onClick={onToggle}
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.1, background: '#2274A5' }}
         whileTap={{ scale: 0.95 }}
-        className="absolute -right-3 top-6 w-6 h-6 rounded-full flex items-center justify-center z-20"
-        style={{ background: '#1e2d38', border: '1px solid rgba(255,255,255,0.08)', color: '#4a6070' }}
+        className="absolute -right-3.5 top-7 w-7 h-7 rounded-full flex items-center justify-center z-20"
+        style={{
+          background:  '#1e2d38',
+          border:      '1.5px solid rgba(34,116,165,0.3)',
+          color:       '#2274A5',
+          boxShadow:   '0 2px 8px rgba(0,0,0,0.4)',
+        }}
       >
-        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+        {collapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
       </motion.button>
     </motion.aside>
   );

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/dashboard/Sidebar';
 import {
   AlertTriangle, Car, Bell, Layers, X,
-  MapPin, Clock, ExternalLink, Flag, ChevronRight,
+  MapPin, Clock, Flag, ChevronRight,
   Filter, Navigation, RefreshCw,
 } from 'lucide-react';
 
@@ -48,7 +48,7 @@ const PLACEHOLDER: MapData = {
 };
 
 // ── Dynamic map (no SSR) ──────────────────────────────────────────────────────
-const CityLeafletMap = dynamic(() => import('@/components/map/CityLeafletMap'), {
+const CityLeafletMap = dynamic(() => import('../../../components/map/CityLeafletMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex flex-col items-center justify-center gap-3"
@@ -262,10 +262,10 @@ export default function MapPage() {
   const router = useRouter();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [mapData,   setMapData]   = useState<MapData>(PLACEHOLDER);
-  const [loading,   setLoading]   = useState(true);
-  const [selected,  setSelected]  = useState<SelectedItem | null>(null);
-  const [filters,   setFilters]   = useState({ issues: true, parking: true, alerts: true });
+  const [mapData,    setMapData]    = useState<MapData>(PLACEHOLDER);
+  const [loading,    setLoading]    = useState(true);
+  const [selected,   setSelected]   = useState<SelectedItem | null>(null);
+  const [filters,    setFilters]    = useState({ issues: true, parking: true, alerts: true });
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = useCallback((showRefresh = false) => {
@@ -275,12 +275,20 @@ export default function MapPage() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.ok ? r.json() : null)
-      .then(d => setMapData(d ?? PLACEHOLDER))
-      .catch(() => setMapData(PLACEHOLDER))
-      .finally(() => { setLoading(false); setRefreshing(false); });
+      .then(d => {
+        if (d) setMapData(d);
+      })
+      .catch(() => {/* already have PLACEHOLDER */})
+      .finally(() => {
+        setLoading(false);
+        setRefreshing(false);
+      });
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleMapClick = (lat: number, lng: number) => {
     router.push(`/reports/new?lat=${lat.toFixed(5)}&lng=${lng.toFixed(5)}`);

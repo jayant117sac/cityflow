@@ -1,8 +1,15 @@
 'use client';
-import { useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
+import { Icon } from 'leaflet';
 import type { MapData } from './MapPreview';
 import 'leaflet/dist/leaflet.css';
+
+// Fix default icon — must be done at module level for Next.js
+Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 interface Props {
   mapData: MapData;
@@ -12,17 +19,6 @@ interface Props {
 const CENTER: [number, number] = [18.5204, 73.8567];
 
 export default function LeafletMap({ mapData }: Props) {
-  // Fix Leaflet default icon paths in Next.js
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const L = require('leaflet');
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: '/leaflet/marker-icon-2x.png',
-      iconUrl:       '/leaflet/marker-icon.png',
-      shadowUrl:     '/leaflet/marker-shadow.png',
-    });
-  }, []);
 
   return (
     <MapContainer

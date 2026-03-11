@@ -42,7 +42,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     <motion.aside
       animate={{ width: collapsed ? 68 : 228 }}
       transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-      className="relative flex flex-col h-full shrink-0 overflow-hidden"
+      className="relative flex flex-col h-full shrink-0"
       style={{ background: '#131B23', borderRight: '1px solid rgba(255,255,255,0.05)' }}
     >
       {/* Logo */}

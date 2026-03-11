@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -66,8 +66,8 @@ function inputStyle(focused: boolean): React.CSSProperties {
   };
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
-export default function ReportNewPage() {
+// ── Main page (inner — uses useSearchParams) ──────────────────────────────────
+function ReportNewInner() {
   const router       = useRouter();
   const searchParams = useSearchParams();
 
@@ -533,5 +533,18 @@ export default function ReportNewPage() {
 
       </div>
     </div>
+  );
+}
+
+// ── Suspense wrapper — required because useSearchParams is used ───────────────
+export default function ReportNewPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center" style={{ background: '#0d1117' }}>
+        <div className="w-8 h-8 rounded-full border-2 border-[#2274A5] border-t-transparent animate-spin" />
+      </div>
+    }>
+      <ReportNewInner />
+    </Suspense>
   );
 }

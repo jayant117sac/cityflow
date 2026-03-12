@@ -24,3 +24,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Dark scrollbar — CityFlow theme ─────────────────────────────────────── */
+::-webkit-scrollbar              { width: 5px; height: 5px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: rgba(255,255,255,0.07); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(34,116,165,0.45); }
+*                                { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.07) transparent; }

@@ -21,11 +21,11 @@ interface SidebarProps {
 
 const NAV_ITEMS = [
   { label: 'Dashboard',      icon: LayoutDashboard, href: '/dashboard' },
-  { label: 'Report Issue',   icon: FileWarning,     href: '/dashboard/report' },
+  { label: 'Report Issue',   icon: FileWarning,     href: '/reports/new' },
   { label: 'Community',      icon: Users,           href: '/dashboard/community' },
   { label: 'Smart Parking',  icon: ParkingCircle,   href: '/dashboard/parking' },
   { label: 'City Alerts',    icon: BellRing,        href: '/dashboard/alerts' },
-  { label: 'My Reports',     icon: ClipboardList,   href: '/dashboard/my-reports' },
+  { label: 'My Reports',     icon: ClipboardList,   href: '/reports' },
   { label: 'Settings',       icon: Settings,        href: '/dashboard/settings' },
 ];
 

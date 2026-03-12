@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  UserCircle,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { label: 'Smart Parking',  icon: ParkingCircle,   href: '/dashboard/parking' },
   { label: 'City Alerts',    icon: BellRing,        href: '/dashboard/alerts' },
   { label: 'My Reports',     icon: ClipboardList,   href: '/reports' },
+  { label: 'My Profile',     icon: UserCircle,      href: '/profile' },
   { label: 'Settings',       icon: Settings,        href: '/dashboard/settings' },
 ];
 

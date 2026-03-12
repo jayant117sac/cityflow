@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { label: 'Smart Parking',  icon: ParkingCircle,   href: '/dashboard/parking' },
   { label: 'City Alerts',    icon: BellRing,        href: '/dashboard/alerts' },
   { label: 'My Reports',     icon: ClipboardList,   href: '/reports' },
+  { label: 'Notifications',  icon: BellRing,        href: '/notifications' },
   { label: 'My Profile',     icon: UserCircle,      href: '/profile' },
   { label: 'Settings',       icon: Settings,        href: '/dashboard/settings' },
 ];

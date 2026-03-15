@@ -8,7 +8,7 @@ import AuthInput from './AuthInput';
 import AuthCard from './AuthCard';
 import { C } from './AuthLayout';
 
-type Role   = 'citizen' | 'official' | '';
+type Role   = 'citizen' | 'admin' | '';
 type Errors = {
   name?: string; email?: string;
   password?: string; confirm?: string;
@@ -23,7 +23,7 @@ const ROLES = [
     desc: 'Report issues, track resolutions & earn civic points',
   },
   {
-    id: 'official' as Role,
+    id: 'admin' as Role,
     icon: '🏛️',
     title: 'Government Official',
     desc: 'Manage departmental tasks & city data',
@@ -111,12 +111,9 @@ export default function RegisterForm() {
         localStorage.setItem('cf_user', JSON.stringify(data.user));
         setSuccess(true);
         setTimeout(() => {
-          const userRole = data.user?.role?.toUpperCase();
-          if (userRole === 'ADMIN' || userRole === 'GOVERNMENT') {
-            router.push('/admin/dashboard');
-          } else {
-            router.push('/dashboard');
-          }
+          const userRole = (data.user?.role ?? '').toUpperCase();
+          const isAdmin  = ['ADMIN', 'OFFICIAL', 'GOVERNMENT'].includes(userRole);
+          router.push(isAdmin ? '/admin/dashboard' : '/dashboard');
         }, 2000);
       }
     } catch {

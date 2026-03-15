@@ -50,8 +50,9 @@ export default function LoginForm() {
         localStorage.setItem('cf_token', data.token);
         localStorage.setItem('cf_user', JSON.stringify(data.user));
         // Role-based redirect
-        if (data.user?.role === 'ADMIN') router.push('/admin/dashboard');
-        else router.push('/dashboard');
+        const role = (data.user?.role ?? '').toUpperCase();
+        const isAdmin = ['ADMIN', 'OFFICIAL', 'GOVERNMENT'].includes(role);
+        router.push(isAdmin ? '/admin/dashboard' : '/dashboard');
       }
     } catch {
       setErrors({ general: 'Connection error. Try again.' });

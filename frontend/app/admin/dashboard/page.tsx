@@ -259,7 +259,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('cf_user') || '{}');
-    if (!['ADMIN','admin','GOVERNMENT'].includes(user?.role)) router.push('/dashboard');
+    const role = (user?.role ?? '').toUpperCase();
+    if (!['ADMIN', 'GOVERNMENT'].includes(role)) router.push('/dashboard');
   }, [router]);
 
   useEffect(() => {

@@ -110,7 +110,14 @@ export default function RegisterForm() {
         localStorage.setItem('cf_token', data.token);
         localStorage.setItem('cf_user', JSON.stringify(data.user));
         setSuccess(true);
-        setTimeout(() => router.push('/dashboard'), 2000);
+        setTimeout(() => {
+          const userRole = data.user?.role?.toUpperCase();
+          if (userRole === 'ADMIN' || userRole === 'GOVERNMENT') {
+            router.push('/admin/dashboard');
+          } else {
+            router.push('/dashboard');
+          }
+        }, 2000);
       }
     } catch {
       setErrors({ general: 'Connection error. Please check your network and try again.' });
